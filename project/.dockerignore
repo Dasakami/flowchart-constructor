@@ -1,0 +1,36 @@
+# Общие
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.env
+.env*
+.vscode/
+.idea/
+.DS_Store
+
+# Python окружения
+venv/
+.venv/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+
+# Docker
+Dockerfile*
+docker-compose.yml
+
+# Git
+.git/
+.gitignore
+
+# Системные файлы
+Thumbs.db
+desktop.ini

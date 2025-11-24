@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: flowchart_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/flowchart.db:/app/flowchart.db
+    environment:
+      - DATABASE_URL=sqlite:///./flowchart.db
+    restart: always
+
+  frontend:
+    build: ./project
+    container_name: flowchart_frontend
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    command: npm run dev -- --host
+    volumes:
+      - ./project:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+    restart: always

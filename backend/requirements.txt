@@ -5,7 +5,7 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 databases[sqlite]==0.8.0
-sqlalchemy==2.0.25
+sqlalchemy==1.4.49
 aiosqlite==0.19.0
 pyjwt==2.8.0
 bcrypt==4.1.2
