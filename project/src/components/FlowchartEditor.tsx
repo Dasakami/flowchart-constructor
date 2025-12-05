@@ -30,10 +30,7 @@ export default function FlowchartEditor({
   const [lastSaved, setLastSaved] = useState<Date>(new Date(flowchart.updated_at));
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      handleAutoSave();
-    }, 30000);
-
+    const interval = setInterval(() => handleAutoSave(), 30000);
     return () => clearInterval(interval);
   }, [nodes, connections, title, description]);
 
@@ -45,18 +42,11 @@ export default function FlowchartEditor({
   const handleSave = async (auto = false) => {
     setSaving(true);
     try {
-      await api.updateFlowchart(flowchart.id, title, description, {
-        nodes,
-        connections,
-      });
+      await api.updateFlowchart(flowchart.id, title, description, { nodes, connections });
       setLastSaved(new Date());
-      if (!auto) {
-        alert('Блок-схема сохранена');
-      }
-    } catch (error) {
-      if (!auto) {
-        alert('Ошибка при сохранении');
-      }
+      if (!auto) alert('Блок-схема сохранена');
+    } catch {
+      if (!auto) alert('Ошибка при сохранении');
     } finally {
       setSaving(false);
     }
@@ -75,7 +65,7 @@ export default function FlowchartEditor({
             <button
               onClick={onBack}
               className="p-2 hover:bg-gray-100 rounded-lg transition"
-              title="Вернуться к списку"
+              title="Вернуться"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -92,23 +82,20 @@ export default function FlowchartEditor({
               onClick={() => setShowSettings(true)}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
             >
-              <Settings className="w-5 h-5" />
-              Настройки
+              <Settings className="w-5 h-5" /> Настройки
             </button>
             <button
               onClick={() => handleSave()}
               disabled={saving}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
             >
-              <Save className="w-5 h-5" />
-              Сохранить
+              <Save className="w-5 h-5" /> Сохранить
             </button>
             <button
               onClick={() => setShowExportModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
             >
-              <Download className="w-5 h-5" />
-              Экспорт
+              <Download className="w-5 h-5" /> Экспорт
             </button>
           </div>
         </div>
@@ -140,24 +127,20 @@ export default function FlowchartEditor({
             <h2 className="text-xl font-bold text-gray-900 mb-4">Настройки блок-схемы</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Название
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Название</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Описание
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Описание</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                   rows={3}
                 />
               </div>

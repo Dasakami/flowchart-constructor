@@ -21,7 +21,6 @@ export default function Canvas({
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [draggingNode, setDraggingNode] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState('');
   const [scale, setScale] = useState(1);
@@ -37,11 +36,6 @@ export default function Canvas({
 
     const x = (e.clientX - rect.left - pan.x) / scale;
     const y = (e.clientY - rect.top - pan.y) / scale;
-
-    if (e.shiftKey && selectedNode) {
-      setConnectingFrom(selectedNode);
-      return;
-    }
 
     const newNode: FlowchartNode = {
       id: Date.now().toString(),
@@ -83,16 +77,11 @@ export default function Canvas({
     setDraggingNode(nodeId);
 
     const node = nodes.find((n) => n.id === nodeId);
-    if (node) {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        const mouseX = (e.clientX - rect.left - pan.x) / scale;
-        const mouseY = (e.clientY - rect.top - pan.y) / scale;
-        setDragOffset({
-          x: mouseX - node.x,
-          y: mouseY - node.y,
-        });
-      }
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (node && rect) {
+      const mouseX = (e.clientX - rect.left - pan.x) / scale;
+      const mouseY = (e.clientY - rect.top - pan.y) / scale;
+      setDragOffset({ x: mouseX - node.x, y: mouseY - node.y });
     }
   };
 
@@ -135,10 +124,7 @@ export default function Canvas({
     if (e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
-      setPanStart({
-        x: e.clientX - pan.x,
-        y: e.clientY - pan.y,
-      });
+      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
     }
   };
 
@@ -190,28 +176,18 @@ export default function Canvas({
   const renderConnection = (conn: Connection) => {
     const fromNode = nodes.find((n) => n.id === conn.from);
     const toNode = nodes.find((n) => n.id === conn.to);
-
     if (!fromNode || !toNode) return null;
 
-    const x1 = fromNode.x + 60;
-    const y1 = fromNode.y + 40;
-    const x2 = toNode.x + 60;
-    const y2 = toNode.y + 40;
-
+    const x1 = fromNode.x + 64; // центр блока
+    const y1 = fromNode.y + 32;
+    const x2 = toNode.x + 64;
+    const y2 = toNode.y + 32;
     const angle = Math.atan2(y2 - y1, x2 - x1);
     const arrowSize = 10;
 
     return (
       <g key={conn.id}>
-        <line
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
-          stroke="#374151"
-          strokeWidth="2"
-          markerEnd="url(#arrowhead)"
-        />
+        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#374151" strokeWidth={2} />
         <polygon
           points={`${x2},${y2} ${x2 - arrowSize * Math.cos(angle - Math.PI / 6)},${
             y2 - arrowSize * Math.sin(angle - Math.PI / 6)
@@ -226,11 +202,8 @@ export default function Canvas({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' && selectedNode) {
-        handleDeleteNode(selectedNode);
-      }
+      if (e.key === 'Delete' && selectedNode) handleDeleteNode(selectedNode);
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedNode, nodes, connections]);
@@ -246,8 +219,7 @@ export default function Canvas({
         onMouseDown={handleMiddleMouseDown}
         onWheel={handleWheel}
         style={{
-          backgroundImage:
-            'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
           backgroundSize: '20px 20px',
         }}
       >
@@ -258,18 +230,6 @@ export default function Canvas({
             transformOrigin: '0 0',
           }}
         >
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="10"
-              refX="9"
-              refY="3"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3, 0 6" fill="#374151" />
-            </marker>
-          </defs>
           {connections.map(renderConnection)}
         </svg>
 
@@ -284,24 +244,16 @@ export default function Canvas({
               key={node.id}
               className={`absolute w-32 h-20 border-2 flex items-center justify-center font-medium text-sm cursor-move select-none shadow-md transition-shadow ${getNodeStyle(
                 node
-              )} ${
-                selectedNode === node.id
-                  ? 'ring-4 ring-blue-400 shadow-lg'
-                  : 'hover:shadow-lg'
-              } ${node.type === 'decision' ? 'w-32 h-32' : ''}`}
+              )} ${selectedNode === node.id ? 'ring-4 ring-blue-400 shadow-lg' : 'hover:shadow-lg'} ${
+                node.type === 'decision' ? 'w-32 h-32' : ''
+              }`}
               style={{
                 left: node.x,
                 top: node.y,
               }}
               onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
             >
-              <span
-                className={
-                  node.type === 'decision'
-                    ? 'transform -rotate-45 text-center px-2'
-                    : 'text-center px-2'
-                }
-              >
+              <span className={node.type === 'decision' ? 'transform -rotate-45 text-center px-2' : 'text-center px-2'}>
                 {node.label}
               </span>
               {selectedNode === node.id && (
@@ -329,9 +281,7 @@ export default function Canvas({
 
       <div className="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg p-2 text-sm text-gray-600">
         <div>Масштаб: {Math.round(scale * 100)}%</div>
-        <div className="text-xs text-gray-400 mt-1">
-          Колесо мыши для масштаба
-        </div>
+        <div className="text-xs text-gray-400 mt-1">Колесо мыши для масштаба</div>
       </div>
 
       {editingNode && (

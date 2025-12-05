@@ -1,4 +1,4 @@
-import { MousePointer2, Circle, Square, Play, StopCircle, GitBranch } from 'lucide-react';
+import { MousePointer2, PlayCircle, StopCircle, Layers, Database, GitCommit } from 'lucide-react';
 
 interface ToolbarProps {
   selectedTool: string;
@@ -7,11 +7,11 @@ interface ToolbarProps {
 
 const tools = [
   { id: 'select', icon: MousePointer2, label: 'Выбрать', color: 'blue' },
-  { id: 'start', icon: Play, label: 'Начало', color: 'green' },
-  { id: 'end', icon: StopCircle, label: 'Конец', color: 'red' },
-  { id: 'process', icon: Square, label: 'Процесс', color: 'blue' },
-  { id: 'input', icon: Circle, label: 'Ввод/Вывод', color: 'yellow' },
-  { id: 'decision', icon: GitBranch, label: 'Условие', color: 'orange' },
+  { id: 'start', icon: PlayCircle, label: 'Старт', color: 'green' },
+  { id: 'end', icon: StopCircle, label: 'Стоп', color: 'red' },
+  { id: 'process', icon: Layers, label: 'Процесс', color: 'blue' },
+  { id: 'input', icon: Database, label: 'Данные', color: 'yellow' },
+  { id: 'decision', icon: GitCommit, label: 'Условие', color: 'orange' },
 ];
 
 export default function Toolbar({ selectedTool, onSelectTool }: ToolbarProps) {
