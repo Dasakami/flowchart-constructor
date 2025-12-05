@@ -1,6 +1,6 @@
 import { User, Flowchart } from './types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://147.45.108.120:5178';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://147.45.108.120:8005';
 
 class API {
   private token: string | null = null;
